@@ -18,9 +18,40 @@ const AuthForm = () => {
     const enteredEmail = emaiInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     if (isLogin) {
+      fetch(
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCY-VGJzQO4PuIAWLAzUqOd4c2XvpMOQFs",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            email: enteredEmail,
+            password: enteredPassword,
+            returnSecureToken: true,
+          }),
+          header: {
+            "Content-Type": "application/json",
+          },
+        }
+      ).then((res) => {
+        setIsLoading(false);
+        if (res.ok) {
+          return res.json().then((data) => {
+            if(data.idToken) {
+              console.log(data.idToken)
+            }
+          })
+          
+        } else {
+          return res.json().then((data) => {
+            // console.log(data);
+            if (data.error.message) {
+              alert(data.error.message);
+            }
+          });
+        }
+      });
     } else {
       fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCY-VGJzQO4PuIAWLAzUqOd4c2XvpMOQFs",
@@ -36,13 +67,13 @@ const AuthForm = () => {
           },
         }
       ).then((res) => {
-        setIsLoading(false)
+        setIsLoading(false);
         if (res.ok) {
         } else {
           return res.json().then((data) => {
             // console.log(data);
-            if(data.error.message) {
-              alert(data.error.message)
+            if (data.error.message) {
+              alert(data.error.message);
             }
           });
         }
