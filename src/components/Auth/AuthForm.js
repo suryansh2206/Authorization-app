@@ -1,9 +1,10 @@
-import { useState, useRef, useContext } from "react";
-
+import { useState, useRef, useContext } from "react"
+import { useHistory } from 'react-router-dom'
 import classes from "./AuthForm.module.css";
 import AuthContext from "../../store/auth-context";
 
 const AuthForm = () => {
+  const history = useHistory()
   const emaiInputRef = useRef();
   const passwordInputRef = useRef();
   const authCtx = useContext(AuthContext);
@@ -54,10 +55,11 @@ const AuthForm = () => {
           if (data.idToken) {
             // console.log(data.idToken);
             authCtx.logIn(data.idToken);
+            history.replace('/')
           }
         })
         .catch((err) => {
-          console.log(err);
+          alert(err);
         });
     }
     //     .then((data) => {
