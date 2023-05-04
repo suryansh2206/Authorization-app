@@ -1,10 +1,12 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 
 import classes from "./AuthForm.module.css";
+import AuthContext from "../../store/auth-context";
 
 const AuthForm = () => {
   const emaiInputRef = useRef();
   const passwordInputRef = useRef();
+  const authCtx = useContext(AuthContext);
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,25 +36,34 @@ const AuthForm = () => {
             "Content-Type": "application/json",
           },
         }
-      ).then((res) => {
-        setIsLoading(false);
-        if (res.ok) {
-          return res.json().then((data) => {
-            if(data.idToken) {
-              console.log(data.idToken)
-            }
-          })
-          
-        } else {
-          return res.json().then((data) => {
-            // console.log(data);
-            if (data.error.message) {
-              alert(data.error.message);
-            }
-          });
-        }
-      });
-    } else {
+      )
+        .then((res) => {
+          setIsLoading(false);
+          if (res.ok) {
+            return res.json();
+          } else {
+            return res.json().then((data) => {
+              // console.log(data);
+              if (data.error.message) {
+                alert(data.error.message);
+              }
+            });
+          }
+        })
+        .then((data) => {
+          if (data.idToken) {
+            // console.log(data.idToken);
+            authCtx.logIn(data.idToken);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    //     .then((data) => {
+    //       console.log(data);
+    //     })
+    else {
       fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCY-VGJzQO4PuIAWLAzUqOd4c2XvpMOQFs",
         {
